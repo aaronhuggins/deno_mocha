@@ -88,3 +88,9 @@ Run tests in this repository using command:
 ```shell
 deno run --allow-run test/DenoMochaSuite.ts
 ```
+
+## Credit
+
+This library was inspired by Craig Morten's blog post from June 4, 2020.
+
+Craig Morten - https://dev.to/craigmorten/testing-your-deno-apps-with-mocha-4f35
