@@ -1,0 +1,182 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>DenoMocha</title>
+	<meta name="description" content="Documentation for DenoMocha">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">DenoMocha</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>DenoMocha</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#denomocha" id="denomocha" style="color: inherit; text-decoration: none;">
+					<h1>DenoMocha</h1>
+				</a>
+				<p>An intuitive wrapper for Mocha targeting Deno, supporting both JavaScript and TypeScript tests. Includes a simple CLI tool, <code>deno_mocha</code>.</p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<a href="#command-line-interface" id="command-line-interface" style="color: inherit; text-decoration: none;">
+					<h3>Command-line Interface</h3>
+				</a>
+				<p>Write your mocha tests in a folder named <code>test</code>, importing <code>deno_mocha</code> module at the top of each test script.</p>
+				<pre><code class="language-TypeScript"><span class="hljs-comment">// filename: test/SampleSuite.ts</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;https://deno.land/x/deno_mocha/mod.ts&#x27;</span>
+
+describe(<span class="hljs-string">&#x27;Sample TS&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+  it(<span class="hljs-string">&#x27;should run TypeScript&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Sample TypeScript ran!&#x27;</span>)
+  })
+})</code></pre>
+				<p>Install <code>deno_mocha</code> using Deno cli.</p>
+				<pre><code class="language-shell">deno install --allow-all --allow-run https://deno.land/x/deno_mocha/deno_mocha.ts</code></pre>
+				<p>Execute <code>deno_mocha</code>; it will find test scripts named according to Mocha conventions and execute them.</p>
+				<pre><code class="language-shell"><span class="hljs-meta">&gt;</span><span class="bash"> deno_mocha</span>
+
+  Sample TS
+    Sample TypeScript ran!
+    ✓ should run TypeScript
+
+  1 passing (2ms)</code></pre>
+				<a href="#want-more-control" id="want-more-control" style="color: inherit; text-decoration: none;">
+					<h3>Want more control?</h3>
+				</a>
+				<p>Import the <code>setup</code> and <code>run</code> function at the top of your test scripts.</p>
+				<p>Call <code>setup()</code> before declaring the test code, and call <code>run()</code> at the end of the script.</p>
+				<pre><code class="language-TypeScript"><span class="hljs-comment">// filename: test/SampleSuite.ts</span>
+<span class="hljs-keyword">import</span> { setup, run } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;https://deno.land/x/deno_mocha/mod.ts&#x27;</span>
+
+setup()
+
+describe(<span class="hljs-string">&#x27;Sample TS&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+  it(<span class="hljs-string">&#x27;should run TypeScript&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Sample TypeScript ran!&#x27;</span>)
+  })
+})
+
+run()</code></pre>
+				<p>Execute your test script(s) using <code>deno</code>.</p>
+				<pre><code class="language-shell"><span class="hljs-meta">&gt;</span><span class="bash"> deno run <span class="hljs-built_in">test</span>/SampleSuite.ts</span>
+
+  Sample TS
+    Sample TypeScript ran!
+    ✓ should run TypeScript
+
+  1 passing (2ms)</code></pre>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<p>For complete API details, please visit the <a href="./docs/globals.html">docs</a>.</p>
+				<a href="#future" id="future" style="color: inherit; text-decoration: none;">
+					<h2>Future</h2>
+				</a>
+				<p>Near future plans are to support Mocha options by file <code>.mocharc.json</code> in the project root, and to expand <code>deno_mocha</code> CLI support to match Mocha&#39;s more closely.</p>
+				<a href="#why" id="why" style="color: inherit; text-decoration: none;">
+					<h2>Why</h2>
+				</a>
+				<p>The desire is for more feature-parity with testing under Node, but with as little baggage as possible. Mocha is a great test suite, and the familiarity for developers who already use it under Node may help with adopting Deno.</p>
+				<p>Mocha is the test framework of choice for this developer, and having a simple way to use it in Deno has already helped this developer adopt Deno.</p>
+				<p>Deno&#39;s built-in testing framework is great; Mocha is just different. Sometimes different is good.</p>
+				<a href="#testing-this-repository" id="testing-this-repository" style="color: inherit; text-decoration: none;">
+					<h2>Testing this repository</h2>
+				</a>
+				<p>Run tests in this repository using command:</p>
+				<pre><code class="language-shell">deno run --allow-run test/DenoMochaSuite.ts</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-function">
+						<a href="globals.html#deno_mocha" class="tsd-kind-icon">deno_<wbr>mocha</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#run" class="tsd-kind-icon">run</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#setup" class="tsd-kind-icon">setup</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#denomocha" class="tsd-kind-icon">Deno<wbr>Mocha</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
