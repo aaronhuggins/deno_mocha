@@ -67,7 +67,7 @@ Execute your test script(s) using `deno`.
 
 ## API
 
-For complete API details, please visit the [docs](./docs/globals.html).
+For complete API details, please visit the [docs](https://ahuggins-nhs.github.io/deno_mocha/globals.html).
 
 ## Future
 
