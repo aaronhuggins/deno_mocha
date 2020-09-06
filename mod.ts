@@ -2,15 +2,28 @@ import './deps.ts'
 import type { Mocha, BrowserMocha } from './deps.ts'
 
 /** @hidden */
-interface Window { location?: URL }
+interface Window {
+  location?: URL
+  onunload?: () => void
+}
 /** @hidden */
 declare var window: Window & typeof globalThis
 
 /** @hidden */
 function onFinished (failures: number): void {
   if (failures > 0) {
+    if (typeof window.onunload === 'function') {
+      try {
+        window.onunload()
+      } catch (error) {}
+    }
     Deno.exit(1)
   } else {
+    if (typeof window.onunload === 'function') {
+      try {
+        window.onunload()
+      } catch (error) {}
+    }
     Deno.exit(0)
   }
 }
