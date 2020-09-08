@@ -12,18 +12,14 @@ declare var window: Window & typeof globalThis
 /** @hidden */
 function onFinished (failures: number): void {
   if (failures > 0) {
-    if (typeof window.onunload === 'function') {
-      try {
-        window.onunload()
-      } catch (error) {}
-    }
+    try {
+      window.dispatchEvent(new Event('unload'))
+    } catch (error) {}
     Deno.exit(1)
   } else {
-    if (typeof window.onunload === 'function') {
-      try {
-        window.onunload()
-      } catch (error) {}
-    }
+    try {
+      window.dispatchEvent(new Event('unload'))
+    } catch (error) {}
     Deno.exit(0)
   }
 }
