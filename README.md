@@ -18,9 +18,10 @@ describe('Sample TS', () => {
 })
 ```
 
-Install `deno_mocha` using Deno cli.
+Install `deno_mocha` using [`deno_run`](https://github.com/aaronhuggins/deno_run).
 ```shell
-deno install --allow-all --allow-run https://deno.land/x/deno_mocha/deno_mocha.ts
+# Installation will prompt you to accept permisisons.
+deno_run install https://deno.land/x/deno_mocha/
 ```
 
 Execute `deno_mocha`; it will find test scripts named according to Mocha conventions and execute them.
