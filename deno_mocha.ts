@@ -68,12 +68,13 @@ async function deno_mocha () {
   const bail = typeof options.bail === 'boolean' ? options.bail : DEFAULT_BAIL
   let importCount = 0
 
-  setup()
+  setup({ bail })
 
   for await (const fileEntry of fileEntries) {
     if (fileEntry.isFile) {
       importCount += 1
-      await import('file:///' + join(Deno.cwd(), fileEntry.path).replaceAll('\\', '/'))
+
+      specs.push(import('file:///' + join(Deno.cwd(), fileEntry.path).replaceAll('\\', '/')))
     }
   }
 
