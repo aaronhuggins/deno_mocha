@@ -4,6 +4,16 @@ An intuitive wrapper for Mocha targeting Deno, supporting both JavaScript and Ty
 
 ## Usage
 
+### Installation
+
+Install `deno_mocha` using [`deno_run`](https://github.com/aaronhuggins/deno_run).
+```shell
+# Installation will prompt you to accept permisisons.
+deno_run install https://deno.land/x/deno_mocha/
+```
+
+> If using Deno CLI to install directly, please see `manifest.ts` for required permissions.
+
 ### Command-line Interface
 
 Write your mocha tests in a folder named `test`, importing `deno_mocha` module at the top of each test script.
@@ -16,12 +26,6 @@ describe('Sample TS', () => {
     console.log('Sample TypeScript ran!')
   })
 })
-```
-
-Install `deno_mocha` using [`deno_run`](https://github.com/aaronhuggins/deno_run).
-```shell
-# Installation will prompt you to accept permisisons.
-deno_run install https://deno.land/x/deno_mocha/
 ```
 
 Execute `deno_mocha`; it will find test scripts named according to Mocha conventions and execute them.
