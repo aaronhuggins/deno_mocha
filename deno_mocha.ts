@@ -1,88 +1,147 @@
-import { globToRegExp, join, normalize, parse, walk } from './deps.ts'
-import { run, setup } from './mod.ts'
+// Taken from https://gist.github.com/lucacasonato/54c03bb267074aaa9b32415dbfb25522
 
-/** @hidden */
-const DEFAULT_BAIL = false
-/** @hidden */
-const DEFAULT_SPEC_FOLDER = 'test'
-/** @hidden */
-const DEFAULT_SPEC_FILES = [
-  '*Suite.{ts,js}',
-  '*.test.{ts,js}',
-  '*.spec.{ts,js}'
-]
+// The group for the 'describe' callback we are currently in. If there is no
+// current group, we are not in a 'describe' callback.
+let currentGroup: Group | undefined;
 
-/** @hidden */
-function splitFileGlobs (file: string, folder?: string): string[] {
-  const splitter = /([-+~@()!:\\/*?A-Za-z0-9_. {,]+[},])/gu
-
-  if (typeof folder === 'string') folder = normalize(folder)
-
-  return file.split(splitter)
-    .filter(glob => {
-      glob = glob.trim()
-
-      return glob !== '' && glob !== ','
-    })
-    .map(glob => {
-      if (glob.substr(glob.length - 1) === ',') glob = glob.substr(0, glob.length - 1).trim()
-      if (glob.substr(0) === ',') glob = glob.substr(1, glob.length).trim()
-      if (typeof folder === 'string') return join('.', folder, glob)
-
-      return glob
-    })
+interface Tester {
+  step: (name: string, fn: (t: any) => (Promise<void>)) => Promise<void>
 }
 
-/**
- * Command-line interface for DenoMocha.
- * 
- * 
- * Usage:
- * 
- *   deno_mocha [OPTIONS]
- * 
- * 
- * Options:
- * 
- *   --file    OPTIONAL: A comma-separated list of test script file globs;
- *             uses Mocha file name conventions by default.
- * 
- *   --root    OPTIONAL: A different root folder for searching for test
- *             scripts; defaults to `./test`
- * 
- *   --bail    OPTIONAL: Bail on test script import errors.
- */
-async function deno_mocha () {
-  const specs: Promise<any>[] = []
-  const options = parse(Deno.args)
-  const filePatterns = typeof options.file === 'string'
-    ? splitFileGlobs(options.file, options.root)
-    : DEFAULT_SPEC_FILES.map(glob => {
-      if (typeof options.root === 'string') return join('.', normalize(options.root), glob)
+interface Group {
+  items: Array<[string, Group | Test]>;
+  before: Array<Func | AsyncFunc>;
+  beforeEach: Array<Func | AsyncFunc>;
+  after: Array<Func | AsyncFunc>;
+  afterEach: Array<Func | AsyncFunc>;
+}
 
-      return join('.', DEFAULT_SPEC_FOLDER, glob)
-    })
-  const fileEntries = walk('.', {
-    match: filePatterns.map(glob => globToRegExp(glob))
-  })
-  const bail = typeof options.bail === 'boolean' ? options.bail : DEFAULT_BAIL
-  let importCount = 0
+type Done = (err?: any) => void;
 
-  setup({ bail })
+/** Callback function used for tests and hooks. */
+type Func = (done: Done) => void;
 
-  for await (const fileEntry of fileEntries) {
-    if (fileEntry.isFile) {
-      importCount += 1
+/** Async callback function used for tests and hooks. */
+type AsyncFunc = () => PromiseLike<any>;
 
-      specs.push(import('file:///' + join(Deno.cwd(), fileEntry.path).replaceAll('\\', '/')))
-    }
+interface Test {
+  fn: Func | AsyncFunc;
+}
+
+export function describe(name: string, fn: () => void) {
+  // Save the current group so we can restore it after the callback.
+  const existingGroup = currentGroup;
+  // Create a new group, and set it as the current group.
+  const group: Group = currentGroup = {
+    items: [],
+    before: [],
+    beforeEach: [],
+    after: [],
+    afterEach: [],
+  };
+  fn();
+  // Restore the previous group.
+  currentGroup = existingGroup;
+  // Add the new group to the existing group if there was one. If there was no
+  // existing group, this is the top-level group, so we register the group with
+  // `Deno.test`.
+  if (existingGroup !== undefined) {
+    existingGroup.items.push([name, group]);
+  } else {
+    Deno.test(name, groupFn(group) as any);
   }
-
-  await Promise.all(specs.map(promise => promise.catch(reason => {
-    if (bail) return Promise.reject(reason)
-  })))
-
-  if (importCount > 0) run()
 }
 
-deno_mocha()
+// This function returns a function that will run the tests in the given group.
+// This is used to register the tests with `Deno.test`.
+function groupFn(group: Group): (t: Tester) => Promise<void> {
+  return async (t) => {
+    // Run the before callbacks.
+    for (const fn of group.before) {
+      await func(fn);
+    }
+
+    for (const [name, item] of group.items) {
+      // If the item is a group, recurse into it, else use the test fn.
+      const fn = "fn" in item ? () => func(item.fn) : groupFn(item);
+
+      // Register this test with the tester.
+      await t.step(name, async (t) => {
+        // Run the beforeEach callbacks.
+        for (const fn of group.beforeEach) {
+          await func(fn);
+        }
+        // Run the test / group fn.
+        await fn(t);
+
+        // Run the afterEach callbacks.
+        for (const fn of group.afterEach) {
+          await func(fn);
+        }
+      });
+    }
+
+    // Run the after callbacks.
+    for (const fn of group.after) {
+      await func(fn);
+    }
+  };
+}
+
+function func(fn: Func | AsyncFunc): Promise<void> {
+  if (fn.length === 1) {
+    return new Promise((resolve, reject) => {
+      fn((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+  return Promise.resolve((fn as AsyncFunc)());
+}
+
+// Register a before callback for the current group. If there is no current
+// group, we are not in a 'describe' callback, so we throw an error.
+export function before(fn: Func | AsyncFunc) {
+  if (currentGroup === undefined) {
+    throw new TypeError("Can not call before() outside of a describe().");
+  }
+  currentGroup.before.push(fn);
+}
+
+// Register a beforeEach callback for the current group. If there is no current
+// group, we are not in a 'describe' callback, so we throw an error.
+export function beforeEach(fn: Func | AsyncFunc) {
+  if (currentGroup === undefined) {
+    throw new TypeError("Can not call beforeEach() outside of a describe().");
+  }
+  currentGroup.beforeEach.push(fn);
+}
+
+// Register an after callback for the current group. If there is no current
+// group, we are not in a 'describe' callback, so we throw an error.
+export function after(fn: Func | AsyncFunc) {
+  if (currentGroup === undefined) {
+    throw new TypeError("Can not call after() outside of a describe().");
+  }
+  currentGroup.after.push(fn);
+}
+
+// Register an afterEach callback for the current group. If there is no current
+// group, we are not in a 'describe' callback, so we throw an error.
+export function afterEach(fn: Func | AsyncFunc) {
+  if (currentGroup === undefined) {
+    throw new TypeError("Can not call afterEach() outside of a describe().");
+  }
+  currentGroup.afterEach.push(fn);
+}
+
+export function it(name: string, fn: Func | AsyncFunc) {
+  if (currentGroup === undefined) {
+    throw new TypeError("Can not call it() outside of a describe().");
+  }
+  currentGroup.items.push([name, { fn }]);
+}
