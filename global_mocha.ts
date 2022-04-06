@@ -5,7 +5,7 @@ import {
   before as beforeImpl,
   beforeEach as beforeEachImpl,
   it as itImpl
-} from "./mocha.ts";
+} from "./deno_mocha.ts";
 
 declare global {
   let describe: typeof describeImpl
