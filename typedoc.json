@@ -1,6 +1,0 @@
-{
-  "inputFiles": ["mod.ts", "deno_mocha.ts"],
-  "name": "DenoMocha",
-  "mode": "file",
-  "ignoreCompilerErrors": true
-}
