@@ -1,34 +1,42 @@
 # DenoMocha
 
-An intuitive wrapper for Mocha targeting Deno, supporting both JavaScript and TypeScript tests. Includes a simple CLI tool, `deno_mocha`.
+An intuitive wrapper for Mocha targeting Deno, supporting both JavaScript and
+TypeScript tests. Includes a simple CLI tool, `deno_mocha`.
 
 ## Usage
 
 ### Installation
 
-Install `deno_mocha` using [`deno_run`](https://github.com/aaronhuggins/deno_run).
+Install `deno_mocha` using
+[`deno_run`](https://github.com/aaronhuggins/deno_run).
+
 ```shell
 # Installation will prompt you to accept permisisons.
 deno_run install https://deno.land/x/deno_mocha/
 ```
 
-> If using Deno CLI to install directly, please see `manifest.ts` for required permissions.
+> If using Deno CLI to install directly, please see `manifest.ts` for required
+> permissions.
 
 ### Command-line Interface
 
-Write your mocha tests in a folder named `test`, importing `deno_mocha` module at the top of each test script.
+Write your mocha tests in a folder named `test`, importing `deno_mocha` module
+at the top of each test script.
+
 ```TypeScript
 // filename: test/SampleSuite.ts
-import 'https://deno.land/x/deno_mocha/mod.ts'
+import "https://deno.land/x/deno_mocha/mod.ts";
 
-describe('Sample TS', () => {
-  it('should run TypeScript', () => {
-    console.log('Sample TypeScript ran!')
-  })
-})
+describe("Sample TS", () => {
+  it("should run TypeScript", () => {
+    console.log("Sample TypeScript ran!");
+  });
+});
 ```
 
-Execute `deno_mocha`; it will find test scripts named according to Mocha conventions and execute them.
+Execute `deno_mocha`; it will find test scripts named according to Mocha
+conventions and execute them.
+
 ```shell
 > deno_mocha
 
@@ -43,23 +51,26 @@ Execute `deno_mocha`; it will find test scripts named according to Mocha convent
 
 Import the `setup` and `run` function at the top of your test scripts.
 
-Call `setup()` before declaring the test code, and call `run()` at the end of the script.
+Call `setup()` before declaring the test code, and call `run()` at the end of
+the script.
+
 ```TypeScript
 // filename: test/SampleSuite.ts
-import { setup, run } from 'https://deno.land/x/deno_mocha/mod.ts'
+import { run, setup } from "https://deno.land/x/deno_mocha/mod.ts";
 
-setup()
+setup();
 
-describe('Sample TS', () => {
-  it('should run TypeScript', () => {
-    console.log('Sample TypeScript ran!')
-  })
-})
+describe("Sample TS", () => {
+  it("should run TypeScript", () => {
+    console.log("Sample TypeScript ran!");
+  });
+});
 
-run()
+run();
 ```
 
 Execute your test script(s) using `deno`.
+
 ```shell
 > deno run test/SampleSuite.ts
 
@@ -72,19 +83,26 @@ Execute your test script(s) using `deno`.
 
 ## API
 
-For complete API details, please visit the [docs](https://ahuggins-nhs.github.io/deno_mocha/globals.html).
+For complete API details, please visit the
+[docs](https://ahuggins-nhs.github.io/deno_mocha/globals.html).
 
 ## Future
 
-Near future plans are to support Mocha options by file `.mocharc.json` in the project root, and to expand `deno_mocha` CLI support to match Mocha's more closely.
+Near future plans are to support Mocha options by file `.mocharc.json` in the
+project root, and to expand `deno_mocha` CLI support to match Mocha's more
+closely.
 
 ## Why
 
-The desire is for more feature-parity with testing under Node, but with as little baggage as possible. Mocha is a great test suite, and the familiarity for developers who already use it under Node may help with adopting Deno.
+The desire is for more feature-parity with testing under Node, but with as
+little baggage as possible. Mocha is a great test suite, and the familiarity for
+developers who already use it under Node may help with adopting Deno.
 
-Mocha is the test framework of choice for this developer, and having a simple way to use it in Deno has already helped this developer adopt Deno.
+Mocha is the test framework of choice for this developer, and having a simple
+way to use it in Deno has already helped this developer adopt Deno.
 
-Deno's built-in testing framework is great; Mocha is just different. Sometimes different is good.
+Deno's built-in testing framework is great; Mocha is just different. Sometimes
+different is good.
 
 ## Testing this repository
 
