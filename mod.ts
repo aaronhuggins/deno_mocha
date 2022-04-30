@@ -1,5 +1,5 @@
-import { BDD } from "./bdd.ts";
-import type { DescribeOpts, Func, Hook, TestSuite } from "./types.ts";
+import { BDD } from "./lib/bdd.ts";
+import type { DescribeOpts, Func, Hook, TestSuite } from "./lib/types.ts";
 
 export function describe<T = unknown>(name: string): TestSuite<T>;
 export function describe<T = unknown>(options: DescribeOpts<T>): TestSuite<T>;
