@@ -61,7 +61,7 @@ export class BDD {
   static suiteGroups = new Map<symbol, SuiteGroup<any>>();
   static currentSuiteGroup?: SuiteGroup<any>;
 
-  static describe<T = unknown>(
+  static describe<T extends Record<string | number | symbol, any> = any>(
     nameOrSuiteOrOpts: DescribeOpts<T> | TestSuite<T> | string,
     nameOrFn?: string | (() => void),
     func?: () => void,
